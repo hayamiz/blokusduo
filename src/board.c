@@ -119,8 +119,8 @@ player_t occupied_by(board_t * board, int8_t x, int8_t y){
     return PLAYER_WHITE;
 }
 
-void transform(piece_rot_t rot, bool reversed, int8_t & dx, int8_t & dy){
-    int8 tmp;
+void transform(piece_rot_t rot, bool reversed, int8_t * dx, int8_t * dy){
+    int8_t tmp;
     switch(rot){
     case ROTATE_NONE:
         break;
@@ -158,11 +158,11 @@ bool validate_move_no_conflict(board_t * board, piece_info_t * move){
         int8_t x,y;
         x = pd.diff_extras[i].dx;
         y = pd.diff_extras[i].dy;
-        transform(move->rot, &x, &y);
+        transform(move->rot, move->reversed, &x, &y);
         x += move->x;
         y += move->y;
 
-        if (!valid_coord(x,y) || !occupied(x, y)){
+        if (!valid_coord(x, y) || !occupied(board, x, y)){
             return false;
         }
     }
@@ -177,16 +177,16 @@ bool validate_move_check_corner_point(board_t * board
     uintptr_t i;
     for (i = 0;i < 4;i++){
         piece_cell_t * cell = &NG_cells[i];
-        if (occupied(board, cell->x, cell->y)
-            && player == occupied_by(board, cell->x, cell->y)){
+        if (occupied(board, cell->dx, cell->dy)
+            && player == occupied_by(board, cell->dx, cell->dy)){
             return false;
         }
     }
 
     for (i = 0;i < 4;i++){
         piece_cell_t * cell = &required_cells[i];
-        if (occupied(board, cell->x, cell->y)
-            && player = occupied_by(board, cell->x, cell->y)){
+        if (occupied(board, cell->dx, cell->dy)
+            && player == occupied_by(board, cell->dx, cell->dy)){
             return true;
         }
     }
@@ -199,11 +199,11 @@ bool validate_move_check_corner(board_t * board, piece_info_t * move){
     uintptr_t i;
     
     pd = piece_data[move->type];
-    for (i = 0;i < pd->num - 1;i++){
+    for (i = 0;i < pd.num - 1;i++){
         int8_t x,y;
-        x = pd->diff_extras[i].dx;
-        y = pd->diff_extras[i].dy;
-        transform(move->rot, &x, &y);
+        x = pd.diff_extras[i].dx;
+        y = pd.diff_extras[i].dy;
+        transform(move->rot, move->reversed, &x, &y);
         x += move->x;
         y += move->y;
 
@@ -241,10 +241,10 @@ piece_info_t * make_valid_moves(board_t * board, player_t player, uint16_t * ret
         return false;
         break;
     case PLAYER_BLACK:
-        pieces = &board->pieces_black;
+        pieces = board->pieces_black;
         break;
     case PLAYER_WHITE:
-        pieces = &board->pieces_white;
+        pieces = board->pieces_white;
         break;
     }
 
