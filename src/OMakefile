@@ -1,0 +1,5 @@
+
+CProgram(blokusduo, board)
+
+.DEFAULT: board.o
+
