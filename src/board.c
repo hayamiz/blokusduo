@@ -285,4 +285,50 @@ piece_info_t * make_valid_moves(board_t * board, player_t player, uint16_t * ret
 }
 
 
+/*
+ * return true if successfully a move is done
+ *
+ */
+bool do_move(board_t * board, piece_info_t * move){
+    if (!validate_move(board, move)){
+        return false;
+    }
 
+    piece_info_t ** pieces;
+    switch(move->player){
+    case PLAYER_BLACK:
+        pieces = board->pieces_black;
+        break;
+    case PLAYER_WHITE:
+        pieces = board->pieces_white;
+        break;
+    case PLAYER_NONE:
+        return false;
+        break;
+    }
+
+    pieces[move->type] = malloc(sizeof(piece_info_t));
+    memcpy(pieces[move->type], move, sizeof(piece_info_t));
+
+    uintptr_t i;
+    uint32_t mask, color_mask;
+    int8_t x,y;
+    mask = 1 << move->x;
+    color_mask = move->player << move->x;
+    board->occupied[move->y] |= mask;
+    board->cellcolors[move->y] |= color_mask;
+    for(i = 0;i < piece_data[move->type].num - 1;i++){
+        x = piece_data[move->type].diff_extras[i].dx;
+        y = piece_data[move->type].diff_extras[i].dy;
+        transform(move->rot, move->reversed, &x, &y);
+        x += move->x;
+        y += move->y;
+
+        mask = 1 << x;
+        color_mask = move->player << move->x;
+        board->occupied[y] |= mask;
+        board->cellcolors[y] |= color_mask;
+    }
+
+    return true;
+}
