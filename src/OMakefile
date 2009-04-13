@@ -1,5 +1,9 @@
 
-CProgram(blokusduo, board)
+LDFLAGS=-lncurses
+CFLAGS=-g -Wall
 
-.DEFAULT: board.o
+CProgram(blokusduo, main board vis_curses)
+
+.DEFAULT: blokusduo
+
 

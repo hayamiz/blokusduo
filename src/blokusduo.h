@@ -45,10 +45,10 @@
 
 
 typedef enum {
-    PLAYER_NONE = -1,
-    PLAYER_WHITE = 0,
-    PLAYER_BLACK = 1,
-} player_t;
+    ROLE_NONE = -1,
+    ROLE_WHITE = 0,
+    ROLE_BLACK = 1,
+} role_t;
 
 // clockwise rotation
 typedef enum {
@@ -73,7 +73,7 @@ typedef struct piece_info {
     bool reversed;
     piece_rot_t rot;
     piece_type_t type;
-    player_t player;
+    role_t role;
 } piece_info_t;
 
 // 14x14 = 196
@@ -90,6 +90,9 @@ typedef struct board {
     // If, for example, pieces[16] is NULL, it means 16 = PIECE_Q is not placed yet.
     piece_info_t * pieces_black[BLOKUSDUO_PIECENUM];
     piece_info_t * pieces_white[BLOKUSDUO_PIECENUM];
+
+    uint8_t blacknum;
+    uint8_t whitenum;
 } board_t;
 
 typedef struct piece_cell {
