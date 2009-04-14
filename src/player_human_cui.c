@@ -7,6 +7,8 @@ player_t * make_player_human_cui(role_t role){
 
     ret->role = role;
     ret->type = PLAYER_HUMAN_CUI;
+
+    return ret;
 }
 
 void player_human_cui_init(player_t * player){

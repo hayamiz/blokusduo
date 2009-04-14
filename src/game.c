@@ -47,25 +47,28 @@ bool game_play(game_t * game){
     while(!check_finished(board)){
         uint32_t move_code;
         turn_t * turn;
-        switch(role){
-        case ROLE_BLACK:
-            do {
+        turn = NULL;
+        do {
+            if (turn != NULL){
+                free(turn);
+                turn = NULL;
+            }
+            switch(role){
+            case ROLE_BLACK:
                 move_code = player_ask_next_move(game->black, board);
                 turn = decode_turn(move_code, role);
-            } while(turn->pass != true
-                    && !validate_move(board, &turn->move));
-            break;
-        case ROLE_WHITE:
-            do {
+                break;
+            case ROLE_WHITE:
                 move_code = player_ask_next_move(game->white, board);
                 turn = decode_turn(move_code, role);
-            } while(turn->pass != true
-                    && !validate_move(board, &turn->move));
-            break;
-        default:
-            DEBUG_ABORT("never reaches here");
-            break;
-        }
+                break;
+            default:
+                DEBUG_ABORT("never reaches here");
+                break;
+            }
+        } while(turn->pass != true
+                && !validate_move(board, &turn->move));
+        
         if (!turn->pass){
             do_move(board, &turn->move);
         }
