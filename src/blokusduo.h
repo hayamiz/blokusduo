@@ -142,6 +142,7 @@ typedef enum {
 
 typedef struct player {
     player_type_t type;
+    ui_t ui;
     role_t role;
     // you can add some members to implement another player type
 } player_t;

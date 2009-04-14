@@ -115,27 +115,29 @@ piece_cell_t * piece_info_points(piece_info_t * piece_info, uintptr_t * retsz){
 }
 
 piece_type_t * available_piece_types(board_t * board, role_t role, uintptr_t * retsz){
-    *retsz = 0;
-    uintptr_t i;
+    uintptr_t vmnum;
+    piece_info_t * vms;
     piece_type_t * ret;
-    piece_info_t ** pieces;
-    ret = NULL;
 
-    if (role == ROLE_BLACK){
-        pieces = board->pieces_black;
-    } else if (role == ROLE_WHITE){
-        pieces = board->pieces_white;
-    } else {
+    vms = make_valid_moves(board, role, &vmnum);
+    *retsz = vmnum;
+    if (vmnum == 0){
         return NULL;
     }
 
-    for (i = 0;i < BLOKUSDUO_PIECENUM;i++){
-        if (pieces[i] == NULL){
+    ret = NULL;
+    *retsz = 0;
+    uintptr_t i;
+    for(i = 0;i < vmnum;i++){
+        if (*retsz == 0
+            || ret[(*retsz) - 1] != vms[i].type) {
             (*retsz)++;
             ret = realloc(ret, sizeof(piece_type_t) * (*retsz));
-            ret[(*retsz) - 1] = i;
+            ret[(*retsz) - 1] = vms[i].type;
         }
     }
+
+    free(vms);
 
     return ret;
 }
@@ -215,6 +217,7 @@ bool move_covers(piece_info_t * move, int8_t x, int8_t y){
         _y = cells[i].y;
 
         if (x == _x && y == _y){
+            free(cells);
             return true;
         }
     }
@@ -240,6 +243,7 @@ bool validate_move_inside_board(board_t * board, piece_info_t * move){
         y = cells[i].y;
 
         if (!valid_coord(x, y)){
+            free(cells);
             return false;
         }
     }
@@ -265,6 +269,7 @@ bool validate_move_no_conflict(board_t * board, piece_info_t * move){
         y = cells[i].y;
 
         if (!valid_coord(x, y) || occupied(board, x, y)){
+            free(cells);
             return false;
         }
     }
@@ -325,6 +330,7 @@ bool validate_move_check_corner(board_t * board, piece_info_t * move){
                                               , move->role
                                               , x
                                               , y)){
+            free(cells);
             return false;
         }
     }
@@ -338,6 +344,7 @@ bool validate_move_check_corner(board_t * board, piece_info_t * move){
                                              , move->role
                                              , x
                                              , y)){
+            free(cells);
             return true;
         }
     }

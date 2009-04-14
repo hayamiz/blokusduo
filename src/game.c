@@ -10,8 +10,8 @@ game_t * make_game(player_t * black, player_t * white){
 }
 
 void quit_game(game_t * game){
-    // free(game->black);
-    // free(game->white);
+    free(game->black);
+    free(game->white);
     free(game);
 }
 

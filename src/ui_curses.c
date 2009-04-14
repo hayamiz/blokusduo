@@ -58,10 +58,10 @@ void ui_curses_draw_board(board_t * board){
             if(occupied(board, x, y)){
                 switch(occupied_by(board, x, y)){
                 case ROLE_BLACK:
-                    DRAW_POINT(y, x, '#');
+                    DRAW_POINT(y, x, BLACK_SYMBOL_CH);
                     break;
                 case ROLE_WHITE:
-                    DRAW_POINT(y, x, '@');
+                    DRAW_POINT(y, x, WHITE_SYMBOL_CH);
                     break;
                 case ROLE_NONE:
                     DRAW_POINT(y, x, '/');
@@ -74,7 +74,7 @@ void ui_curses_draw_board(board_t * board){
     refresh();
 }
 
-void ui_curses_draw_instructions(){
+void ui_curses_draw_info(board_t * board, role_t role){
     char * insts[] = {"Arrow keys: move a piece"
                       , "c: next piece"
                       , "r: rotate a piece"
@@ -84,6 +84,21 @@ void ui_curses_draw_instructions(){
     for (i = 0;i < 4;i++){
         mvinsstr(5 + i, CX(BLOKUSDUO_BOARDSIZE) + 4, insts[i]);
     }
+
+    char buf[1024];
+    sprintf(buf, "%c %s's turn"
+            , (role == ROLE_BLACK ? BLACK_SYMBOL_CH : WHITE_SYMBOL_CH)
+            , (role == ROLE_BLACK ? "BLACK" : "WHITE"));
+    mvinsstr(10, CX(BLOKUSDUO_BOARDSIZE) + 4, buf);
+
+    sprintf(buf, "BLACK: %d remaining piece%c"
+            , BLOKUSDUO_PIECENUM - board->blacknum
+            , (BLOKUSDUO_PIECENUM - board->blacknum <= 1 ? ' ' : ' '));
+    mvinsstr(12, CX(BLOKUSDUO_BOARDSIZE) + 4, buf);
+    sprintf(buf, "WHITE: %d remaining piece%c"
+            , BLOKUSDUO_PIECENUM - board->whitenum
+            , (BLOKUSDUO_PIECENUM - board->whitenum <= 1 ? ' ' : ' '));
+    mvinsstr(13, CX(BLOKUSDUO_BOARDSIZE) + 4, buf);
 }
 
 void ui_curses_draw_move_cand(board_t * board, piece_info_t * move_cand){
@@ -143,7 +158,7 @@ uint32_t ui_curses_get_move(board_t * board, role_t role){
     
     ui_curses_draw_board(board);
     ui_curses_draw_move_cand(board, move);
-    ui_curses_draw_instructions();
+    ui_curses_draw_info(board, role);
     
     do {
         c = wgetch(stdscr);
@@ -216,10 +231,8 @@ uint32_t ui_curses_get_move(board_t * board, role_t role){
             adjust_move_inside(board, move);
         }
 
-        ui_curses_draw_board(board);
+        ui_curses_update(board, role);
         ui_curses_draw_move_cand(board, move);
-        ui_curses_draw_instructions();
-
         refresh();
     } while(true);
 
@@ -230,4 +243,10 @@ finished:
     }
 
     return ret;
+}
+
+void ui_curses_update(board_t * board, role_t role){
+    ui_curses_draw_board(board);
+    ui_curses_draw_info(board, role);
+    refresh();
 }
