@@ -2,7 +2,7 @@
 LDFLAGS=-lncurses
 CFLAGS=-g -Wall
 
-CProgram(blokusduo, main board vis_curses)
+CProgram(blokusduo, main board ui ui_curses player player_human_cui game)
 
 .DEFAULT: blokusduo
 

@@ -76,6 +76,11 @@ typedef struct piece_info {
     role_t role;
 } piece_info_t;
 
+typedef struct turn {
+    bool pass;
+    piece_info_t move;
+} turn_t;
+
 // 14x14 = 196
 typedef struct board {
     // This is a kind of cache.
@@ -96,8 +101,8 @@ typedef struct board {
 } board_t;
 
 typedef struct piece_cell {
-    int8_t dx;
-    int8_t dy;
+    int8_t x;
+    int8_t y;
 } piece_cell_t;
 
 typedef struct piece_datum {
@@ -124,5 +129,29 @@ typedef struct piece_datum {
  *
  */
 
+
+typedef enum {
+    UI_CURSES,
+    UI_SDL,
+} ui_t;
+
+typedef enum {
+    PLAYER_HUMAN_CUI,
+    PLAYER_COMPUTER,
+} player_type_t;
+
+typedef struct player {
+    player_type_t type;
+    role_t role;
+    // you can add some members to implement another player type
+} player_t;
+
+typedef struct game {
+    player_t * black;
+    player_t * white;
+} game_t;
+
+#define DEBUG_ABORT(msg) \
+    fprintf(stderr, "%s@%d: %s\n", __FILE__, __LINE__, msg);
 
 #endif

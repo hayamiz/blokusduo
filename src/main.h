@@ -8,6 +8,6 @@
 #include <unistd.h>
 
 #include "blokusduo.h"
-#include "vis_curses.h"
+#include "player.h"
 
 #endif

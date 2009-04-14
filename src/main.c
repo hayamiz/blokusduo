@@ -3,24 +3,20 @@
 
 
 int main(int argc, char ** argv){
-    uintptr_t i;
-    board_t * board;
-    piece_info_t * moves;
-    uint16_t retsz;
-    
-    board = make_board();
-    moves = make_valid_moves(board, ROLE_BLACK, &retsz);
+    char buf[1024];
+    uintptr_t buflen;
 
-    vis_curses_init();
-    for(i = 0;i < retsz && i < 100;i++){
-        sleep(1);
-        board = make_board();
-        do_move(board, &moves[i]);
-        vis_curses_draw_board(board);
-        refresh();
-    }
+    buflen = 1;
+    buf[0] = '*';
 
-    vis_curses_exit();
-    
+    player_t * player1;
+    player_t * player2;
+    player1 = make_player_human_cui(ROLE_BLACK);
+    player2 = make_player_human_cui(ROLE_WHITE);
+
+    game_t * game = make_game(player1, player2);
+
+    game_play(game);
+
     return 0;
 }
